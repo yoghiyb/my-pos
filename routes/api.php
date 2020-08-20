@@ -50,4 +50,5 @@ Route::group($protect, function () {
 
     // report
     Route::get('/order/pdf/{invoice}', 'OrderController@invoicePdf');
+    Route::get('/order/excel/{invoice}', 'OrderController@invoiceExcel');
 });

@@ -3134,6 +3134,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3180,20 +3184,27 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
-    generatePdf: function generatePdf(order) {
-      var endpoint = "".concat(BASE_URL, "/order/pdf/").concat(order.invoice);
+    generateFile: function generateFile(order, type) {
+      var endpoint = "".concat(BASE_URL, "/order/").concat(type, "/").concat(order.invoice);
       axios.get(endpoint, {
         responseType: "blob"
       }).then(function (response) {
         var url = window.URL.createObjectURL(new Blob([response.data]));
         var link = document.createElement("a");
         link.href = url;
-        link.id = "genPdf";
-        link.setAttribute("download", "".concat(order.invoice, ".pdf")); //or any other extension
+        link.id = "gen".concat(type);
+        var mime = "";
 
+        if (type == "pdf") {
+          mime = "pdf";
+        } else if (type == "excel") {
+          mime = "xlsx";
+        }
+
+        link.setAttribute("download", "".concat(order.invoice, ".").concat(mime));
         document.body.appendChild(link);
         link.click();
-        $("a").remove("#genPdf");
+        $("a").remove("#gen".concat(type));
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -49616,14 +49627,30 @@ var render = function() {
                                     attrs: { type: "button" },
                                     on: {
                                       click: function($event) {
-                                        return _vm.generatePdf(order)
+                                        return _vm.generateFile(order, "pdf")
                                       }
                                     }
                                   },
                                   [_c("i", { staticClass: "fa fa-print" })]
                                 ),
                                 _vm._v(" "),
-                                _vm._m(8, true)
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-success btn-sm",
+                                    attrs: { type: "button" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.generateFile(order, "excel")
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-file-excel"
+                                    })
+                                  ]
+                                )
                               ])
                             ])
                           }),
@@ -49754,19 +49781,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Aksi")])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "btn btn-success btn-sm",
-        attrs: { href: "#", target: "_blank" }
-      },
-      [_c("i", { staticClass: "fas fa-file-excel" })]
-    )
   }
 ]
 render._withStripped = true

@@ -14,11 +14,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Exports\OrderInvoice;
 
 class OrderController extends Controller
 {
     /**
+     * Menampilakn data transaksi berdasarkan request
      *
+     * @param Request $request
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -137,6 +141,12 @@ class OrderController extends Controller
         return $data;
     }
 
+    /**
+     * Generate PDF
+     *
+     * @param string $invoice
+     * @return file
+     */
     public function invoicePdf($invoice)
     {
         // ambil data transaksi berdasarkan invoice
@@ -149,8 +159,15 @@ class OrderController extends Controller
         return $pdf->output();
     }
 
+    /**
+     * Generate Excel
+     *
+     * @param string $invoice
+     * @return file
+     */
     public function invoiceExcel($invoice)
     {
+        return (new OrderInvoice($invoice))->download('invoice-' . $invoice . '.xlsx');
     }
 
     /**
@@ -172,25 +189,28 @@ class OrderController extends Controller
         }
 
         try {
+            // ambil data produk berdasarkan id
             $product = Product::findOrFail($request->product_id);
-
+            //mengambil cookie 'cart'
             $getCart = json_decode($request->cookie('cart'), true);
-
+            // jika datanya ada
             if ($getCart) {
+                // jika key-nya ada berdasarkan product_id
                 if (array_key_exists($request->product_id, $getCart)) {
+                    // jumlahkan qty barangnya
                     $getCart[$request->product_id]['qty'] += $request->qty;
-
+                    // kirim kembali untuk disimpan kedalam cookie
                     return response()->json($getCart, 200)->cookie('cart', json_encode($getCart), 120);
                 }
             }
-
+            // jika cart kosong maka tambahkan cart baru
             $getCart[$request->product_id] = [
                 'code' => $product->code,
                 'name' => $product->name,
                 'price' => $product->price,
                 'qty' => $request->qty
             ];
-
+            // kirim responsenya kemudian simpan ke cookie
             return response()->json($getCart, 200)->cookie('cart', json_encode($getCart), 120);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);

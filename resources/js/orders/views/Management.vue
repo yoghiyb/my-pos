@@ -158,14 +158,18 @@
                         <td>
                           <button
                             type="button"
-                            @click="generatePdf(order)"
+                            @click="generateFile(order, 'pdf')"
                             class="btn btn-primary btn-sm"
                           >
                             <i class="fa fa-print"></i>
                           </button>
-                          <a href="#" target="_blank" class="btn btn-success btn-sm">
+                          <button
+                            type="button"
+                            @click="generateFile(order, 'excel')"
+                            class="btn btn-success btn-sm"
+                          >
                             <i class="fas fa-file-excel"></i>
-                          </a>
+                          </button>
                         </td>
                       </tr>
                       <tr v-if="data.orders && data.orders.length <= 0">
@@ -231,19 +235,27 @@ export default {
         })
         .catch((err) => console.log(err));
     },
-    generatePdf(order) {
-      let endpoint = `${BASE_URL}/order/pdf/${order.invoice}`;
+    generateFile(order, type) {
+      let endpoint = `${BASE_URL}/order/${type}/${order.invoice}`;
       axios
         .get(endpoint, { responseType: "blob" })
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
-          link.id = "genPdf";
-          link.setAttribute("download", `${order.invoice}.pdf`); //or any other extension
+          link.id = `gen${type}`;
+
+          let mime = "";
+          if (type == "pdf") {
+            mime = "pdf";
+          } else if (type == "excel") {
+            mime = "xlsx";
+          }
+
+          link.setAttribute("download", `${order.invoice}.${mime}`);
           document.body.appendChild(link);
           link.click();
-          $("a").remove("#genPdf");
+          $("a").remove(`#gen${type}`);
         })
         .catch((err) => console.log(err));
     },
