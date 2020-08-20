@@ -360,7 +360,6 @@ export default {
         .then((response) => {
           // masukkan data keranjang kedalam state shoppingCart
           this.shoppingCart = response.data;
-          console.log(response.data);
         })
         .catch((err) => console.log(err));
     },

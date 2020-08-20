@@ -51,4 +51,8 @@ Route::group($protect, function () {
     // report
     Route::get('/order/pdf/{invoice}', 'OrderController@invoicePdf');
     Route::get('/order/excel/{invoice}', 'OrderController@invoiceExcel');
+
+    // Dashboard
+    Route::get('/dashboard', 'DashboardController@index');
+    Route::get('/chart', 'DashboardController@getChart');
 });

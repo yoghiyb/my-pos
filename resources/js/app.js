@@ -10,6 +10,8 @@ window.Vue = require('vue');
 
 import store from './store'
 import 'jquery-ui/ui/widgets/datepicker.js';
+import Chart from 'chart.js';
+window.Chart = Chart;
 import Swal from 'sweetalert2'
 window.Swal = Swal;
 

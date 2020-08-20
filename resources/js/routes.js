@@ -4,6 +4,7 @@
 import CategoryRoutes from './categories/routes'
 import ProductRoutes from './products/routes'
 import OrderRoutes from './orders/routes'
+import DashboardRoutes from './dashboard/routes'
 
 const routes = []
 
@@ -21,6 +22,7 @@ routes.push(
     ...CategoryRoutes,
     ...ProductRoutes,
     ...OrderRoutes,
+    ...DashboardRoutes,
 
     notFoundPage,
 )
